@@ -24,10 +24,7 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
       e.stopPropagation();
       const confirm = window.confirm("Are you sure about it?");
       if (!confirm) return;
-      const { data } = await axios.post(
-        "/api/chat/delete",
-        { chatId }
-      );
+      const { data } = await axios.post("/api/chat/delete", { chatId });
       if (data.success) {
         setChats((prev) => prev.filter((chat) => chat._id !== chatId));
         await fetchUserChats();
@@ -40,9 +37,8 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
 
   return (
     <div
-      className={`flex flex-col h-screen min-w-72 p-5 dark:bg-gradient-to-b from-[#242124]/30 to-[#000000]/30 border-r border-[#FFD731]/30 backdrop-blur-3xl transition-all duration-500 max-md:absolute left-0 z-1${
-        !isMenuOpen && "max-md:-translate-x-full"
-      }`}
+      className={`flex flex-col h-screen min-w-72 p-5 dark:bg-gradient-to-b from-[#242124]/30 to-[#000000]/30 border-r border-[#FFD731]/30 backdrop-blur-3xl transition-transform duration-500 max-md:fixed max-md:top-0 max-md:left-0 max-md:bg-white dark:max-md:bg-[#1f1f1f]
+ max-md:w-72 max-md:z-50 ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}`}
     >
       {/* LOGO */}
       <img
@@ -100,7 +96,7 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
               </div>
               <img
                 src={assets.bin_icon}
-                className="hidden group-hover:block w-4 cursor-pointer not-dark:invert"
+                className="w-4 cursor-pointer not-dark:invert block md:opacity-0 md:group-hover:opacity-100 transition-opacity"
                 alt=""
                 onClick={(e) =>
                   toast.promise(deleteChat(e, chat._id), {
