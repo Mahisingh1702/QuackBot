@@ -1,7 +1,7 @@
 import {OpenAI} from "openai";
 
-const openai = new OpenAI({
+const gemini = new OpenAI({
     apiKey: process.env.GEMINI_API_KEY,
     baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/"
 });
-export default openai;
+export default gemini;

@@ -19,7 +19,7 @@ const Message = ({ message }) => {
               {moment(message.timestamp).fromNow()}
             </span>
           </div>
-          <img src={assets.FFDF5E} className="w-8 rounded-full" />
+          <img src={assets.user_icon} className="w-8 rounded-full" />
         </div>
       ) : (
         <div className="inline-flex flex-col gap-2 p-2 px-4 max-w-2xl bg-primary/20 dark:bg-[#D6B018]/30 border border-[#FFD731]/30 rounded-md my-4">
@@ -31,6 +31,13 @@ const Message = ({ message }) => {
           ) : (
             <div className="text-sm dark:text-primary reset-tw">
               <Markdown>{message.content}</Markdown>
+              <button
+                onClick={() => navigator.clipboard.writeText(message.content)}
+                className="absolute top-2 right-2 bg-white/80 rounded-full p-1 text-gray-500 hover:text-gray-700 dark:text-[#FFDF5E] dark:hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                title="Copy"
+              >
+                📋
+              </button>
             </div>
           )}
           <span className="text-xs text-gray-400 dark:text-[#FFDF5E]">

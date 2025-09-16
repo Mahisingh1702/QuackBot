@@ -5,6 +5,7 @@ import ChatBox from "./components/ChatBox";
 import { assets } from "./assets/assets";
 import "./assets/prism.css";
 import Loading from "./pages/Loading";
+import {Toaster} from 'react-hot-toast';
 
 const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,6 +16,7 @@ const App = () => {
 
   return (
     <>
+    <Toaster/>
       {!isMenuOpen && (
         <img
           src={assets.menu_icon}

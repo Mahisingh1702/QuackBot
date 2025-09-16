@@ -2,11 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { useAppContext } from "../context/AppContext";
 import { assets } from "../assets/assets";
 import Message from "./Message";
+import toast from "react-hot-toast";
 
 const ChatBox = () => {
   const containerRef = useRef(null);
 
-  const { selectedChat, theme } = useAppContext();
+  const { selectedChat, theme, axios } = useAppContext();
 
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -15,7 +16,37 @@ const ChatBox = () => {
   const [mode, setMode] = useState("text");
 
   const onSubmit = async (e) => {
-    e.preventDefault();
+    try {
+      e.preventDefault();
+      setLoading(true);
+      const promptCopy = prompt;
+      setPrompt("");
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "user",
+          content: prompt,
+          timestamp: Date.now(),
+          isImage: false,
+        },
+      ]);
+
+      const { data } = await axios.post(`/api/message/${mode}`, {
+        chatId: selectedChat._id,
+        prompt,
+      });
+      if (data.success) {
+        setMessages((prev) => [...prev, data.reply]);
+      } else {
+        toast.error(data.message);
+        setPrompt(promptCopy);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setPrompt("");
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -66,18 +97,7 @@ const ChatBox = () => {
         onSubmit={onSubmit}
         className="bg-primary/20 dark:bg-[#2C6594]/30 border border-primary dark:border-[#FFD731]/30 rounded-full w-full max-w-2xl p-3 pl-4 mx-auto flex gap-4 items-center"
       >
-        <select
-          onChange={(e) => setMode(e.target.value)}
-          value={mode}
-          className="text-sm pl-3 pr-2 outline-none"
-        >
-          <option className="dark:bg-yellow-900" value="text">
-            Text
-          </option>
-          <option className="dark:bg-yellow-900" value="image">
-            Image
-          </option>
-        </select>
+        
         <input
           onChange={(e) => setPrompt(e.target.value)}
           value={prompt}
@@ -94,7 +114,6 @@ const ChatBox = () => {
           />
         </button>
       </form>
-      <form></form>
     </div>
   );
 };

@@ -2,14 +2,45 @@ import React, { useState } from "react";
 import { useAppContext } from "../context/AppContext";
 import { assets } from "../assets/assets";
 import moment from "moment";
+import toast from "react-hot-toast";
 
 const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
-  const { chats, setSelectedChat, theme, setTheme, user, navigate } =
-    useAppContext();
+  const {
+    chats,
+    setSelectedChat,
+    theme,
+    setTheme,
+    navigate,
+    createNewChat,
+    axios,
+    setChats,
+    fetchUserChats,
+  } = useAppContext();
+
   const [search, setSearch] = useState("");
+
+  const deleteChat = async (e, chatId) => {
+    try {
+      e.stopPropagation();
+      const confirm = window.confirm("Are you sure about it?");
+      if (!confirm) return;
+      const { data } = await axios.post(
+        "/api/chat/delete",
+        { chatId }
+      );
+      if (data.success) {
+        setChats((prev) => prev.filter((chat) => chat._id !== chatId));
+        await fetchUserChats();
+        toast.success(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   return (
     <div
-      className={`flex flex-col h-screen min-w-72 p-5 dark:bg-gradient-to-b from-[#242124]/30 to-[#000000]/30 border-r border-[#FFD731]/30 backdrop-blur-3x1 transition-all duration-500 max-md:absolute left-0 z-1${
+      className={`flex flex-col h-screen min-w-72 p-5 dark:bg-gradient-to-b from-[#242124]/30 to-[#000000]/30 border-r border-[#FFD731]/30 backdrop-blur-3xl transition-all duration-500 max-md:absolute left-0 z-1${
         !isMenuOpen && "max-md:-translate-x-full"
       }`}
     >
@@ -20,8 +51,8 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
       />
       {/* Chat Button */}
       <button
-        // onClick={createNewChat}
-        className="flex-justify-center items-center w-full py-2 mt-10 text-white bg-gradient-to-r from-[#FFD731] to-[#F08B1F] text-sm rounded-md cursor-pointer"
+        onClick={createNewChat}
+        className="flex justify-center items-center w-full py-2 mt-10 text-white bg-gradient-to-r from-[#FFD731] to-[#F08B1F] text-sm rounded-md cursor-pointer"
       >
         <span className="mr-2 text-xl">+</span> New Chat
       </button>
@@ -58,19 +89,24 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
               className="p-2 px-4 dark:bg-[#D6B018]/10 border border-gray-300 dark:border-[#FFD731]/15 rounded-md cursor-pointer flex justify-between group"
             >
               <div>
-                <p className="truncate w-full">
+                <div className="truncate w-full">
                   {chat.messages.length > 0
                     ? chat.messages[0].content.slice(0, 32)
                     : chat.name}
                   <p className="text-xs text-gray-500 dark:text-[#FFDF5E]">
                     {moment(chat.updatedAt).fromNow()}
                   </p>
-                </p>
+                </div>
               </div>
               <img
                 src={assets.bin_icon}
                 className="hidden group-hover:block w-4 cursor-pointer not-dark:invert"
                 alt=""
+                onClick={(e) =>
+                  toast.promise(deleteChat(e, chat._id), {
+                    loading: "deleting...",
+                  })
+                }
               />
             </div>
           ))}

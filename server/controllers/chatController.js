@@ -1,7 +1,6 @@
 import Chat from "../models/Chat.js";
 
 //API controller for creating a new chat
-
 export const createChat = async (req, res) => {
   try {
     const chatData = {
@@ -15,18 +14,36 @@ export const createChat = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
-//API controller for getting all chats
 
+//API controller for getting all chats
 export const getChats = async (req, res) => {
   try {
-    const chats = await Chat.find().sort({ updatedAt: -1 });
+    let chats = await Chat.find().sort({ updatedAt: -1 });
+
+    // Agar chats empty hain to default chat create karo
+    if (chats.length === 0) {
+      const chatData = {
+        messages: [
+          {
+            role: "assistant",
+            content: "Hi there, how can I help you.",
+            timestamp: Date.now(),
+            isImage: false,
+          },
+        ],
+        name: "Default Chat",
+      };
+      const newChat = await Chat.create(chatData);
+      chats = [newChat];
+    }
+
     res.json({ success: true, chats });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
 };
-//API controller for deleting all chats
 
+//API Controllers for deleting a chat
 export const deleteChat = async (req, res) => {
   try {
     const { chatId } = req.body;
