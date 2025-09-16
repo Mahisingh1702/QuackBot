@@ -37,8 +37,15 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
 
   return (
     <div
-      className={`flex flex-col h-screen min-w-72 p-5 dark:bg-gradient-to-b from-[#242124]/30 to-[#000000]/30 border-r border-[#FFD731]/30 backdrop-blur-3xl transition-transform duration-500 max-md:fixed max-md:top-0 max-md:left-0 max-md:bg-white dark:max-md:bg-[#1f1f1f]
- max-md:w-72 max-md:z-50 ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}`}
+      className={`flex flex-col h-screen min-w-72 p-5 
+  dark:bg-gradient-to-b from-[#242124]/30 to-[#000000]/30 
+  border-r border-[#FFD731]/30 backdrop-blur-3xl 
+  transition-transform duration-500 
+  translate-x-0 
+  max-md:fixed max-md:top-0 max-md:left-0 
+  max-md:bg-white dark:max-md:bg-[#1f1f1f] 
+  max-md:w-72 max-md:z-50 
+  ${isMenuOpen ? "max-md:translate-x-0" : "max-md:-translate-x-full"}`}
     >
       {/* LOGO */}
       <img
@@ -47,7 +54,10 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
       />
       {/* Chat Button */}
       <button
-        onClick={createNewChat}
+        onClick={() => {
+          createNewChat();
+          setIsMenuOpen(false);
+        }}
         className="flex justify-center items-center w-full py-2 mt-10 text-white bg-gradient-to-r from-[#FFD731] to-[#F08B1F] text-sm rounded-md cursor-pointer"
       >
         <span className="mr-2 text-xl">+</span> New Chat
